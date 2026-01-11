@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { ShieldCheck, Mail, Lock } from "lucide-react";
 import type { AppDispatch } from "../store/store";
 
@@ -13,22 +14,44 @@ export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const nav = useNavigate();
 
+  // Alert state
+  const [alertMessage, setAlertMessage] = React.useState<string | null>(null);
+  const [alertVariant, setAlertVariant] = React.useState<"default" | "destructive" | "success">("default");
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
 
-    const res = await dispatch(login({ email, password }));
-    const role = (res.payload as { role: string }).role;
+    try {
+      const res = await dispatch(login({ email, password }));
+      const role = (res.payload as { role: string }).role;
 
-    if (role === "ADMIN") nav("/admin");
-    if (role === "HEALTH_WORKER") nav("/health");
-    if (role === "CITIZEN") nav("/citizen");
+      if (role === "ROLE_ADMIN") nav("/admin");
+      if (role === "ROLE_HEALTH_WORKER") nav("/health");
+      if (role === "ROLE_CITIZEN") nav("/citizen");
+    } catch (error) {
+      setAlertMessage("Login failed: Invalid credentials");
+      setAlertVariant("destructive");
+      setTimeout(() => setAlertMessage(null), 5000);
+    }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+      {/* Custom Alert */}
+      {alertMessage && (
+        <div className="fixed top-4 right-4 z-50 max-w-md">
+          <Alert variant={alertVariant}>
+            <AlertTitle>
+              {alertVariant === "success" ? "Success" : "Error"}
+            </AlertTitle>
+            <AlertDescription>{alertMessage}</AlertDescription>
+          </Alert>
+        </div>
+      )}
+
       <Card className="w-full max-w-md shadow-lg  border-teal-600">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-2">
@@ -71,7 +94,7 @@ export default function Login() {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700">
+            <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 hover:text-cyan-200">
               Sign In
             </Button>
           </form>

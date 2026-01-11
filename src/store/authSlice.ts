@@ -1,17 +1,18 @@
 import { createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { Role } from "@/lib/types";
 
-const API = "http://localhost:8080/api/auth/login";
+const API = `${import.meta.env.VITE_API_BASE_URL}/auth/login`;
 
 export interface AuthState {
   token: string | null;
-  role: string | null;
+  role: Role | null;
 }
 
 const initialState: AuthState = {
   token: localStorage.getItem("token"),
-  role: localStorage.getItem("role"),
+  role: localStorage.getItem("role") as Role | null,
 };
 
 export const login = createAsyncThunk(
@@ -21,7 +22,7 @@ export const login = createAsyncThunk(
     const token = res.data;
 
     const payload = JSON.parse(atob(token.split(".")[1]));
-    return { token, role: payload.role };
+    return { token, role: `ROLE_${payload.role}` as Role };
   }
 );
 
@@ -29,7 +30,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<{ token: string; role: string }>) => {
+    setCredentials: (state, action: PayloadAction<{ token: string; role: Role }>) => {
       state.token = action.payload.token;
       state.role = action.payload.role;
       localStorage.setItem("token", action.payload.token);
