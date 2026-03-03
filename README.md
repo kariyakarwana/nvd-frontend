@@ -1,73 +1,111 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+# NVD Frontend – React Application
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A modern, responsive user interface for the NVD system, built with **React (Vite)** and **TypeScript**. This frontend provides a seamless experience for managing vaccination records, secured by JWT integration with the Spring Boot backend.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Tech Stack
 
-## Expanding the ESLint configuration
+| Category | Technology |
+| --- | --- |
+| **Framework** | React 18 (Vite) |
+| **Language** | TypeScript |
+| **Styling** | TailwindCSS |
+| **HTTP Client** | Axios |
+| **Hosting** | AWS S3 (Static Website Hosting) |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🏗 System Architecture
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+<img width="2050" height="348" alt="mermaid-diagram-2026-03-03-141350" src="https://github.com/user-attachments/assets/517f1051-2655-4f38-829b-1490f95ffc3a" />
+
+
+---
+
+## 🌐 Live Deployment
+
+The application is globally accessible via AWS S3 Static Hosting:
+
+> **Production URL:** [http://www.nvd.live.s3-website.eu-north-1.amazonaws.com](http://www.nvd.live.s3-website.eu-north-1.amazonaws.com)
+
+---
+
+## 🔐 Authentication Flow
+
+<img width="1586" height="922" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/4c046d78-e036-4c41-90e2-cf78ff04c0a0" />
+
+
+---
+
+## ⚙️ Environment Configuration
+
+Create a `.env` file in the root directory to point to your backend:
+
+```env
+VITE_API_BASE_URL=http://<YOUR_EC2_PUBLIC_IP>:8080/api
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Build Command
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+To generate the production-ready files:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
+
 ```
+
+The output will be generated in the `dist/` folder.
+
+---
+
+## 📦 Deployment Process
+
+To deploy manually to AWS S3:
+
+1. **Build:** Run `npm run build` locally.
+2. **Upload:** Upload the contents of the `dist/` folder to your S3 bucket.
+3. **Permissions:** Ensure the S3 Bucket Policy allows `s3:GetObject` for public access.
+4. **Static Hosting:** Set `index.html` as both the **Index** and **Error** document (essential for React Router SPAs).
+
+---
+
+## 🔄 GitHub Actions CI/CD (Optional)
+
+You can automate deployment with this workflow logic:
+
+* **Trigger:** Push to `main` branch.
+* **Action:** 1. `npm install` && `npm run build`
+2. `aws s3 sync dist/ s3://your-bucket-name --delete`
+
+---
+
+## 📂 Project Structure
+
+```text
+src/
+ ├── components/  # Reusable UI elements (Buttons, Inputs, Navbar)
+ ├── pages/       # Full page views (Login, Dashboard, Records)
+ ├── services/    # Axios API configurations and calls
+ ├── hooks/       # Custom React hooks (useAuth, useFetch)
+ ├── utils/       # Helper functions and formatters
+ └── App.tsx      # Main routing and provider setup
+
+```
+
+---
+
+## 📌 Future Improvements
+
+* [ ] **CloudFront:** Add a Content Delivery Network for faster global loading.
+* [ ] **HTTPS:** Use AWS Certificate Manager (ACM) to secure the site.
+* [ ] **State Management:** Integrate Redux Toolkit or TanStack Query for complex data states.
+* [ ] **Unit Testing:** Add Vitest and React Testing Library for component stability.
+
+---
+
